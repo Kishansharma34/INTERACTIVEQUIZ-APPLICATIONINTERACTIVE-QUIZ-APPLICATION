@@ -1,0 +1,366 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>EduConnect - Quiz Module</title>
+    <style>* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    --primary-gradient: linear-gradient(135deg, #667eea 0%, #764ba2 50%, #f093fb 100%);
+    --secondary-gradient: linear-gradient(135deg, #4facfe 0%, #00f2fe 100%);
+    --glass-bg: rgba(255, 255, 255, 0.25);
+    --glass-border: rgba(255, 255, 255, 0.18);
+    --shadow-light: rgba(255, 255, 255, 0.2);
+    --shadow-dark: rgba(0, 0, 0, 0.1);
+    --text-primary: #2d3748;
+    --text-secondary: #4a5568;
+}
+
+body {
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    background: linear-gradient(-45deg, #ee7752, #e73c7e, #23a6d5, #23d5ab);
+    background-size: 400% 400%;
+    animation: gradientShift 15s ease infinite;
+    height: 100vh;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    overflow: hidden;
+    position: relative;
+}
+
+body::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: url('data:image/svg+xml,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100"><defs><radialGradient id="g" cx="50%" cy="50%"><stop offset="0%" stop-color="%23ffffff" stop-opacity="0.1"/><stop offset="100%" stop-color="%23ffffff" stop-opacity="0"/></radialGradient></defs><circle cx="20" cy="20" r="2" fill="url(%23g)"><animate attributeName="cy" values="20;80;20" dur="3s" repeatCount="indefinite"/></circle><circle cx="80" cy="80" r="1.5" fill="url(%23g)"><animate attributeName="cy" values="80;20;80" dur="4s" repeatCount="indefinite"/></circle><circle cx="50" cy="10" r="1.8" fill="url(%23g)"><animate attributeName="cx" values="50;90;10;50" dur="5s" repeatCount="indefinite"/></circle></svg>');
+    pointer-events: none;
+    animation: float 20s linear infinite;
+    z-index: 1;
+}
+
+@keyframes gradientShift {
+    0% { background-position: 0% 50%; }
+    50% { background-position: 100% 50%; }
+    100% { background-position: 0% 50%; }
+}
+
+@keyframes float {
+    to { transform: translateY(-20px) rotate(360deg); }
+}
+
+.header-profile {
+    position: absolute;
+    top: 30px;
+    left: 50%;
+    transform: translateX(-50%);
+    text-align: center;
+    z-index: 3;
+    animation: slideDownGlow 1s ease-out 0.3s both;
+}
+
+.header-profile h2 {
+    font-size: 22px;
+    font-weight: 800;
+    background: var(--secondary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    margin-bottom: 4px;
+    letter-spacing: -0.8px;
+}
+
+.header-profile .subtitle {
+    font-size: 14px;
+    color: rgba(255,255,255,0.9);
+    font-weight: 500;
+    text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+}
+
+.header-profile::before {
+    content: '';
+    position: absolute;
+    bottom: -10px;
+    left: 50%;
+    transform: translateX(-50%);
+    width: 60px;
+    height: 3px;
+    background: var(--primary-gradient);
+    border-radius: 2px;
+    opacity: 0;
+    animation: underlineExpand 0.8s ease-out 0.8s forwards;
+}
+
+@keyframes slideDownGlow {
+    from {
+        opacity: 0;
+        transform: translateX(-50%) translateY(-30px) scale(0.9);
+    }
+    to {
+        opacity: 1;
+        transform: translateX(-50%) translateY(0) scale(1);
+    }
+}
+
+@keyframes underlineExpand {
+    to {
+        width: 100px;
+        opacity: 1;
+    }
+}
+
+.quiz-container {
+    background: var(--glass-bg);
+    backdrop-filter: blur(20px);
+    -webkit-backdrop-filter: blur(20px);
+    border: 1px solid var(--glass-border);
+    width: 420px;
+    padding: 40px;
+    border-radius: 24px;
+    box-shadow: 
+        0 25px 45px rgba(0,0,0,0.1),
+        inset 0 1px 0 var(--shadow-light),
+        inset 0 -1px 0 var(--shadow-dark);
+    text-align: center;
+    animation: slideInUp 0.8s cubic-bezier(0.68, -0.55, 0.265, 1.55) 0.5s both;
+    position: relative;
+    z-index: 2;
+    transition: all 0.5s ease;
+    margin-top: 20px;
+}
+
+.quiz-container::before {
+    content: '';
+    position: absolute;
+    inset: 0;
+    border-radius: 24px;
+    padding: 2px;
+    background: var(--secondary-gradient);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask-composite: exclude;
+    opacity: 0;
+    transition: opacity 0.3s ease;
+}
+
+.quiz-container:hover::before {
+    opacity: 1;
+}
+
+.quiz-container h1 {
+    margin-bottom: 25px;
+    color: var(--text-primary);
+    font-size: 28px;
+    font-weight: 700;
+    background: var(--primary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+    letter-spacing: -0.5px;
+}
+
+#question {
+    font-size: 18px;
+    margin-bottom: 25px;
+    font-weight: 500;
+    color: var(--text-primary);
+    line-height: 1.6;
+    opacity: 0;
+    animation: fadeInUp 0.6s ease forwards 0.2s;
+}
+
+.options {
+    margin-bottom: 20px;
+}
+
+.option-btn {
+    display: block;
+    width: 100%;
+    padding: 16px 20px;
+    margin: 12px 0;
+    border: none;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.4);
+    backdrop-filter: blur(10px);
+    cursor: pointer;
+    font-size: 15px;
+    font-weight: 500;
+    color: var(--text-primary);
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    position: relative;
+    overflow: hidden;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.08);
+}
+
+.option-btn::before {
+    content: '';
+    position: absolute;
+    top: 0;
+    left: -100%;
+    width: 100%;
+    height: 100%;
+    background: var(--secondary-gradient);
+    transition: left 0.5s ease;
+    z-index: -1;
+}
+
+.option-btn:hover::before {
+    left: 0;
+}
+
+.option-btn:hover {
+    background: transparent;
+    color: white;
+    transform: translateY(-4px) scale(1.02);
+    box-shadow: 
+        0 20px 40px rgba(79, 172, 254, 0.3),
+        0 10px 20px rgba(0,0,0,0.1);
+}
+
+.option-btn:active {
+    transform: translateY(-2px) scale(1.01);
+}
+
+#next-btn {
+    margin-top: 20px;
+    padding: 14px 32px;
+    border: none;
+    border-radius: 50px;
+    background: var(--primary-gradient);
+    color: white;
+    font-size: 15px;
+    font-weight: 600;
+    cursor: pointer;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    box-shadow: 0 10px 30px rgba(102, 126, 234, 0.4);
+}
+
+#next-btn::before {
+    content: '';
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    width: 0;
+    height: 0;
+    background: rgba(255,255,255,0.3);
+    border-radius: 50%;
+    transform: translate(-50%, -50%);
+    transition: width 0.6s, height 0.6s;
+}
+
+#next-btn:active::before {
+    width: 300px;
+    height: 300px;
+}
+
+#next-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 20px 40px rgba(102, 126, 234, 0.5);
+}
+
+#next-btn:active {
+    transform: translateY(-1px);
+}
+
+#score {
+    margin-top: 25px;
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--text-primary);
+    background: var(--secondary-gradient);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(20px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes slideInUp {
+    from {
+        opacity: 0;
+        transform: translateY(50px) scale(0.95);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+    }
+}
+
+@keyframes fadeInUp {
+    from {
+        opacity: 0;
+        transform: translateY(20px);
+    }
+    to {
+        opacity: 1;
+        transform: translateY(0);
+    }
+}
+
+/* Responsive */
+@media (max-width: 480px) {
+    .quiz-container {
+        width: 95%;
+        padding: 30px 20px;
+        margin: 20px;
+    }
+    
+    .quiz-container h1 {
+        font-size: 24px;
+    }
+    
+    #question {
+        font-size: 16px;
+    }
+    
+    .header-profile {
+        top: 20px;
+    }
+    
+    .header-profile h2 {
+        font-size: 20px;
+    }
+}
+
+</style>
+</head>
+<body>
+    <!-- Animated Header Added -->
+    <div class="header-profile">
+        <h2>Kishan Sharma</h2>
+        <div class="subtitle">BCA / Web Developer</div>
+    </div>
+
+    <div class="quiz-container">
+        <h1>Interactive Quiz</h1>
+
+        <div id="question">Question text will appear here</div>
+
+        <div class="options">
+            <button class="option-btn">Option 1</button>
+            <button class="option-btn">Option 2</button>
+            <button class="option-btn">Option 3</button>
+            <button class="option-btn">Option 4</button>
+        </div>
+
+        <button id="next-btn">Next Question</button>
+
+        <div id="score"></div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
